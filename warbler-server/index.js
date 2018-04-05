@@ -5,6 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('./handlers/error');
 const authRoutes = require('./routes/auth');
+const followersRoutes = require('./routes/followers');
 const messagesRoutes = require('./routes/messages');
 const db = require("./models");
 const { loginRequired, ensureCorrectUser } = require('./middleware/auth');
@@ -22,6 +23,13 @@ app.use(
 	loginRequired,
 	ensureCorrectUser,
 	messagesRoutes);
+
+app.use(
+		'/api/users/:id/followers',
+		loginRequired,
+		ensureCorrectUser,
+		followersRoutes);		
+
 
 app.get('/api/messages', loginRequired, async function(req, res, next) {
 	try {
