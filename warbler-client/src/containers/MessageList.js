@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchMessages, removeMessage } from '../store/actions/messages';
-import { followUser, fetchFollowers } from '../store/actions/followers';
+import { followUser, fetchFollowers, fetchFollowing } from '../store/actions/followers';
 import MessageItem from '../components/MessageItem';
 
 class MessageList extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {}
+  }
+
   componentDidMount() {
     this.props.fetchMessages();
+    this.props.fetchFollowers(this.props.currentUser);
+    this.props.fetchFollowing(this.props.currentUser);
   }
 
   render() {
-    const { messages, removeMessage, followUser, currentUser, fetchFollowers } = this.props;
-	this.props.fetchFollowers(currentUser);
+    const { messages, followers, following, removeMessage, followUser, currentUser } = this.props;
     let messageList = messages.map(m => (
       <MessageItem
         key={m._id}
@@ -21,8 +27,9 @@ class MessageList extends Component {
         username={m.user.username}
         profileImageUrl={m.user.profileImageUrl}
         removeMessage={removeMessage.bind(this, m.user._id, m._id)}
-        followUser={followUser.bind(this, m.user._id, currentUser)}		
+        followUser={followUser.bind(this, m.user._id, currentUser)}
         isCorrectUser={currentUser === m.user._id}
+        isFollowing={following.includes(m.user._id)}
       />
   ));
   return (
@@ -40,9 +47,10 @@ class MessageList extends Component {
 function mapStateToProps(state) {
   return {
     messages: state.messages,
-	followers: state.followers,
+    followers: state.followers,
+    following: state.following,
     currentUser: state.currentUser.user.id
   };
 }
 
-export default connect(mapStateToProps, { fetchMessages, removeMessage, followUser, fetchFollowers })(MessageList);
+export default connect(mapStateToProps, { fetchMessages, removeMessage, followUser, fetchFollowers, fetchFollowing })(MessageList);
