@@ -28,8 +28,12 @@ app.use(
 		'/api/users/:id/followers',
 		loginRequired,
 		ensureCorrectUser,
-		followersRoutes);		
-
+		followersRoutes);
+app.use(
+		'/api/users/:id/following',
+		loginRequired,
+		ensureCorrectUser,
+		followersRoutes);
 
 app.get('/api/messages', loginRequired, async function(req, res, next) {
 	try {

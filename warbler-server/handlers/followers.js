@@ -29,18 +29,18 @@ exports.addFollower = async function(req, res, next) {
 			foundUserFollowed.followers.push(req.params.follower_id);
 			foundUserFollowing.following.push(req.params.id);
 			await foundUserFollowed.save();
-			await foundUserFollowing.save();			
+			await foundUserFollowing.save();
 		}
 		return res.status(200).json(foundFollower);
 	} catch(err) {
 		if(err.code === 11000) {
 			err.message = 'User already followed';
-		}		
+		}
 		return next(err);
 	}
 };
 
-// GET a single follower - /api/users/:id/followers/:follower_id
+// GET a single follower for user - /api/users/:id/followers/:follower_id
 exports.getFollower = async function(req, res, next) {
 	try {
 		let follower = await db.Follower.findById(req.params.follower_id);
@@ -50,7 +50,7 @@ exports.getFollower = async function(req, res, next) {
 	}
 };
 
-// GET all followers - /api/users/:id/followers
+// GET all followers for user - /api/users/:id/followers
 exports.getFollowers = async function(req, res, next) {
 	try {
 		let user = await db.User.findById(req.params.id);
@@ -60,7 +60,17 @@ exports.getFollowers = async function(req, res, next) {
 	}
 };
 
-// DELETE - /api/users/:id/followers/:follower_id
+// GET all followering user - /api/users/:id/followers
+exports.getFollowing = async function(req, res, next) {
+	try {
+		let user = await db.User.findById(req.params.id);
+		return res.status(200).json(user.following)
+	} catch(err) {
+		return next(err);
+	}
+};
+
+// DELETE follower from user - /api/users/:id/followers/:follower_id
 exports.deleteFollower = async function(req, res, next) {
 	try {
 		let foundFollower = await db.Follower.findById(req.params.follower_id);
