@@ -1,10 +1,15 @@
 import { apiCall } from '../../services/api';
 import {addError} from './errors';
-import { ADD_FOLLOWER, LOAD_FOLLOWERS } from '../actionTypes';
+import { ADD_FOLLOWER, LOAD_FOLLOWERS, LOAD_FOLLOWING } from '../actionTypes';
 
 export const loadFollowers = followers => ({
   type: LOAD_FOLLOWERS,
   followers
+});
+
+export const loadFollowing = following => ({
+  type: LOAD_FOLLOWING,
+  following
 });
 
 // export const remove = id => ({
@@ -27,6 +32,18 @@ export const fetchFollowers = (user_id) => {
     return apiCall('get', `/api/users/${user_id}/followers`)
     .then((res) => {
       dispatch(loadFollowers(res));
+    })
+    .catch(err => {
+      dispatch(addError(err.message));
+    });
+  };
+};
+
+export const fetchFollowing = (user_id) => {
+  return dispatch => {
+    return apiCall('get', `/api/users/${user_id}/following`)
+    .then((res) => {
+      dispatch(loadFollowing(res));
     })
     .catch(err => {
       dispatch(addError(err.message));
