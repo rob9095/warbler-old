@@ -1,10 +1,10 @@
 import { ADD_FOLLOWER, LOAD_FOLLOWERS } from '../actionTypes';
 
 
-const follower = (state = [], action) => {
+const followers = (state = [], action) => {
   switch(action.type) {
     case LOAD_FOLLOWERS:
-      return [...action.followers];	  
+      return [...action.followers];
     case ADD_FOLLOWER:
       return [...action.follower];
     default:
@@ -12,4 +12,4 @@ const follower = (state = [], action) => {
   }
 }
 
-export default follower;
+export default followers;
