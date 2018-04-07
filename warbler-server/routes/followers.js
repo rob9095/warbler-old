@@ -6,9 +6,6 @@ const { addFollower, getFollower, getFollowers, getFollowing, deleteFollower } =
 // prefixed with /api/user/:id/followers
 router.route('/').get(getFollowers);
 
-// prefixed with /api/user/:id/following
-router.route('/').get(getFollowing);
-
 // prefixed with /api/user/:id/followers/:follower_id
 router
 	.route('/:follower_id')
