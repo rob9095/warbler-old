@@ -4,14 +4,14 @@ import { fetchMessages, removeMessage } from '../store/actions/messages';
 import { followUser, unFollowUser, fetchFollowers, fetchFollowing } from '../store/actions/followers';
 import MessageItem from '../components/MessageItem';
 
-class MessageList extends Component {
+class ProfileMessageList extends Component {
 
   constructor(props) {
     super(props);
     this.state = {}
   }
 
-  componentDidMount() {
+  componentDidMount() { 
     this.props.fetchMessages();
     this.props.fetchFollowers(this.props.currentUser);
     this.props.fetchFollowing(this.props.currentUser);
@@ -19,7 +19,15 @@ class MessageList extends Component {
 
   render() {
     const { messages, followers, following, removeMessage, followUser, unFollowUser, currentUser } = this.props;
-    let messageList = messages.map(m => (
+	let followingMessages = [];
+	for (let i = 0; i <= following.length; i++){
+		messages.forEach(function(m){
+			if (m.user._id === following[i]) {
+				followingMessages.push(m);
+			}
+		});
+	}
+	let messageList = followingMessages.map(m => (
       <MessageItem
         key={m._id}
         date={m.createdAt}
@@ -54,4 +62,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { fetchMessages, removeMessage, followUser, unFollowUser, fetchFollowers, fetchFollowing })(MessageList);
+export default connect(mapStateToProps, { fetchMessages, removeMessage, followUser, unFollowUser, fetchFollowers, fetchFollowing })(ProfileMessageList);
