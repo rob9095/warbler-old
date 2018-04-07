@@ -3,7 +3,7 @@ const User = require('./user');
 
 const followerSchema = new mongoose.Schema(
 	{
-		username: {
+		followerKey: {
 			type: String,
 			required: true,
 			unique: true
