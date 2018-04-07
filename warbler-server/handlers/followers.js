@@ -3,18 +3,20 @@ const db = require('../models');
 // POST - /api/users/:id/followers/:follower_id
 exports.addFollower = async function(req, res, next) {
 	try {
-		// make sure both users exist
-		let foundUserFollowed = await db.User.findById(req.params.id);
-		let foundUserFollowing = await db.User.findById(req.params.follower_id);
+		// the user being followed
+		let foundUserFollowed = await db.User.findById(req.params.follower_id);
+		// the current user requesting to follow
+		let foundUserFollowing = await db.User.findById(req.params.id);
+		// make sure the users exist
 		if (foundUserFollowed === null || foundUserFollowing === null) {
 			return next({
 				status: 400,
 				message: 'User not found!'
 			});
 		}
-		// create follower, username is unique
+		// create follower, followerKey is unique and prevents following same user twice
 		let follower = await db.Follower.create({
-			username: foundUserFollowing.username,
+			followerKey: `${foundUserFollowed._id}-${foundUserFollowing._id}`,
 			userFollowed: foundUserFollowed._id,
 			userFollowing: foundUserFollowing._id
 		});
@@ -24,10 +26,10 @@ exports.addFollower = async function(req, res, next) {
 				// username: true,
 				// profileImageUrl: true
 			// });
-		// if follower was created/found push followers and followee to the users
+		// if follower was created push into users followers and following arrays
 		if (foundFollower != null) {
-			foundUserFollowed.followers.push(req.params.follower_id);
-			foundUserFollowing.following.push(req.params.id);
+			foundUserFollowed.followers.push(foundUserFollowing._id);
+			foundUserFollowing.following.push(foundUserFollowed._id);
 			await foundUserFollowed.save();
 			await foundUserFollowing.save();
 		}
@@ -60,7 +62,7 @@ exports.getFollowers = async function(req, res, next) {
 	}
 };
 
-// GET all followering user - /api/users/:id/followers
+// GET all following user - /api/users/:id/following
 exports.getFollowing = async function(req, res, next) {
 	try {
 		let user = await db.User.findById(req.params.id);
@@ -73,7 +75,7 @@ exports.getFollowing = async function(req, res, next) {
 // DELETE follower from user - /api/users/:id/followers/:follower_id
 exports.deleteFollower = async function(req, res, next) {
 	try {
-		let foundFollower = await db.Follower.findById(req.params.follower_id);
+		let foundFollower = await db.Follower.findOne({userFollowing: req.params.id, userFollowed: req.params.follower_id});
 		await foundFollower.remove();
 		return res.status(200).json(foundFollower);
 	} catch(err) {
